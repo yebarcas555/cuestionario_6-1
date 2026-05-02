@@ -880,9 +880,7 @@ function selectOption(idx) {
 
   options.forEach(o => o.classList.add('disabled'));
 
-  // Marcar selección visualmente sin revelar correcta/incorrecta
-  options[idx].style.borderColor = 'rgba(244,200,66,0.6)';
-  options[idx].style.background  = 'rgba(244,200,66,0.08)';
+  // Sin indicación visual — avanza solo
 
   const isCorrect = idx === q.ans;
   if (isCorrect) score++;
