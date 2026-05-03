@@ -809,6 +809,17 @@ let answered = false;
 let userAnswers = [];
 let studentName = '';
 let studentGrado = '';
+let shuffledQuestions = [];
+
+function shuffle(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+let studentGrado = '';
 
 function startQuiz() {
   const nameInput = document.getElementById('inputNombre');
@@ -825,6 +836,8 @@ function startQuiz() {
   studentName  = nameInput.value.trim();
   studentGrado = gradoInput.value.trim() || '6-1';
 
+  shuffledQuestions = shuffle(QUESTIONS);
+
   document.getElementById('startScreen').style.display  = 'none';
   document.getElementById('progressWrap').style.display = 'block';
   document.getElementById('quizCard').style.display     = 'block';
@@ -840,7 +853,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 function renderQuestion() {
-  const q = QUESTIONS[current];
+  const q = shuffledQuestions[current];
   answered = false;
 
   document.getElementById('qNumber').textContent = `Pregunta ${String(current+1).padStart(2,'0')}`;
@@ -863,19 +876,19 @@ function renderQuestion() {
 
   const btn = document.getElementById('btnNext');
   btn.className = 'btn-next';
-  btn.textContent = current === QUESTIONS.length - 1 ? 'Ver resultados →' : 'Siguiente pregunta →';
+  btn.textContent = current === shuffledQuestions.length - 1 ? 'Ver resultados →' : 'Siguiente pregunta →';
 
   // Progress
-  document.getElementById('progressLabel').textContent = `Pregunta ${current+1} de ${QUESTIONS.length}`;
+  document.getElementById('progressLabel').textContent = `Pregunta ${current+1} de ${shuffledQuestions.length}`;
   document.getElementById('progressScore').textContent = `✓ ${score * 5} / 100`;
-  document.getElementById('progressFill').style.width = `${(current / QUESTIONS.length) * 100}%`;
+  document.getElementById('progressFill').style.width = `${(current / shuffledQuestions.length) * 100}%`;
 }
 
 function selectOption(idx) {
   if (answered) return;
   answered = true;
 
-  const q = QUESTIONS[current];
+  const q = shuffledQuestions[current];
   const options = document.querySelectorAll('.option');
 
   options.forEach(o => o.classList.add('disabled'));
@@ -890,7 +903,7 @@ function selectOption(idx) {
   // Avanzar automáticamente después de 800ms sin mostrar nada
   setTimeout(() => {
     current++;
-    if (current < QUESTIONS.length) {
+    if (current < shuffledQuestions.length) {
       renderQuestion();
     } else {
       showResults();
@@ -900,7 +913,7 @@ function selectOption(idx) {
 
 document.getElementById('btnNext').addEventListener('click', () => {
   current++;
-  if (current < QUESTIONS.length) {
+  if (current < shuffledQuestions.length) {
     renderQuestion();
   } else {
     showResults();
@@ -1003,6 +1016,7 @@ function restartQuiz() {
   current = 0;
   score = 0;
   userAnswers = [];
+  shuffledQuestions = [];
   studentName = '';
   studentGrado = '';
   document.getElementById('results').style.display      = 'none';
